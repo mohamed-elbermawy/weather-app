@@ -1,6 +1,8 @@
 const path = require("path");
 const express = require("express");
 const hbs = require("hbs");
+const geocode = require("./utils/geocode");
+const forecast = require("./utils/forecast");
 
 const app = express();
 
@@ -17,8 +19,31 @@ app.use(express.static(staticFolderPath));
 
 app.get("/", (req, res) => {
   res.render("index", {
-    title: "home",
-    name: "Home page",
+    title: "weather",
+    info: "Use this site to get your weather!",
+    name: "weather page",
+  });
+});
+
+app.get("/api/weather", (req, res) => {
+  if (!req.query.address) return res.send({ error: "you must provide an address" });
+
+  geocode(req.query.address, (error, data) => {
+    if (error) {
+      return res.send({ error });
+    }
+
+    forecast(data.latitude, data.longitude, (error, forecastdata) => {
+      if (error) {
+        return res.send({ error });
+      }
+
+      res.send({
+        forecast: forecastdata,
+        location: data.location,
+        address: req.query.address,
+      });
+    });
   });
 });
 
