@@ -14,7 +14,7 @@ form.addEventListener("submit", (e) => {
     massageTwo.textContent = "";
 
     const  address = input.value;
-    fetch(`api/weather?address=${address}`)
+    fetch(`/api/weather?address=${address}`)
       .then((response) => {
         response.json().then((data) => {
           if (data.error) {
